@@ -1,11 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Home</title>
-</head>
-<body>
+    <!-- Start of Meetings Embed Script -->
+    <div
+      class="meetings-iframe-container"
+      data-src="https://meetings.hubspot.com/sabarinath-rajendran?embed=true"
+    ></div>
+    <script
+      type="text/javascript"
+      src="https://static.hsappstatic.net/MeetingsEmbed/ex/MeetingsEmbedCode.js"
+    ></script>
+    <iframe src="/frame.html" ></iframe>
+    <!-- End of Meetings Embed Script -->
+    <script>
+      const isDev = true;
+      const frameOrigin = isDev
+        ? location.origin
+        : "https://syeds-dummy-site.netlify.app";
+
+      function addIframe() {
+        const iframe = document.createElement("iframe");
+        const src = `${frameOrigin}/frame`;
+        iframe.setAttribute("src", src);
+        iframe.setAttribute("style", "display:none");
+        document.body.appendChild(iframe);
+
+        return iframe;
+      }
+
+    function start() {
+        let lastHref = null;
+        const frame = addIframe();
+
+        addEventListener("message", (event) => {
+
+          if (event.origin.includes("https://meetings.hubspot.com")) {
+            const { meetingBookSucceeded, meetingsPayload } = event.data;
+            if (!meetingBookSucceeded || !meetingsPayload) {
+              return; // Return early if booking did not succeed or payload is missing
+            }
+            frame.contentWindow.postMessage({
+              data: event.data,
+              origin: event.orgin,
+            });
+          }
+        });
+      }
+
+      start();
+    </script>
+  </head>
+  <body>
     Hello world
-</body>
+  </body>
 </html>
